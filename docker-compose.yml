@@ -1,0 +1,17 @@
+services:
+  firewall-lab:
+    build: .
+    container_name: firewall-lab
+
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+
+    security_opt:
+      - seccomp:unconfined
+
+    ports:
+      - "8080:8080"
+
+    stdin_open: true
+    tty: true
