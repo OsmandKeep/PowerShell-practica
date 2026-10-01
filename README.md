@@ -2,7 +2,7 @@
 
 ## Description
 
-This project provides two equivalent solutions to verify whether a specific network port is **OPEN** or **CLOSED**:
+This project provides two solutions to verify whether a specific network port is **OPEN** or **CLOSED**:
 1. **Linux Shell Script** running inside a Docker container.
 2. **Windows PowerShell Script** running natively on Windows.
 
@@ -14,12 +14,10 @@ This project provides two equivalent solutions to verify whether a specific netw
 docker-firewall/
 │
 ├── shellscript/
-│   ├── check_port.sh            # Main Bash script for Linux
-│   └── verificar_puerto.sh      # Localized alias
+│   └── check_port.sh            # Bash script for Linux / Docker
 │
 ├── powershell/
-│   ├── check_port.ps1           # Main PowerShell script for Windows
-│   └── verificar_puerto.ps1     # Localized alias
+│   └── check_port.ps1           # PowerShell script for Windows
 │
 ├── Dockerfile                   # Ubuntu-based Linux image
 ├── docker-compose.yml           # Docker Compose configuration
@@ -32,7 +30,7 @@ docker-firewall/
 
 ### Script: `shellscript/check_port.sh`
 
-The Bash script accepts a port number as its primary argument (and an optional hostname/IP, default `127.0.0.1`). It validates input parameters and uses native Bash TCP sockets (`/dev/tcp/$HOST/$PORT`) with a 2-second timeout to check connectivity.
+The script accepts a port number as its argument (and an optional host, default: `127.0.0.1`). It uses native Bash TCP sockets (`/dev/tcp/$HOST/$PORT`) with a 2-second timeout to check connectivity.
 
 ### Execution with Docker
 
@@ -45,15 +43,15 @@ docker build -t firewall-lab .
 ```bash
 docker run --rm firewall-lab /lab/shellscript/check_port.sh 9999
 ```
-*Expected output: `[CERRADO] El puerto 9999 en 127.0.0.1 está CERRADO.`*
+*Expected output: `[CLOSED] Port 9999 on 127.0.0.1 is CLOSED.`*
 
-#### Test an open port (e.g., port 80 on an external host):
+#### Test an open port (e.g., port 80 on google.com):
 ```bash
 docker run --rm firewall-lab /lab/shellscript/check_port.sh 80 google.com
 ```
-*Expected output: `[ABIERTO] El puerto 80 en google.com está ABIERTO.`*
+*Expected output: `[OPEN] Port 80 on google.com is OPEN.`*
 
-#### Interactive container usage:
+#### Interactive container execution:
 ```bash
 docker run -it --rm firewall-lab bash
 ./shellscript/check_port.sh 80 google.com
@@ -66,25 +64,26 @@ exit
 
 ### Script: `powershell/check_port.ps1`
 
-The PowerShell script accepts a port number (and optional hostname, default `127.0.0.1`). It uses .NET `System.Net.Sockets.TcpClient` to perform a fast, reliable TCP connection check with timeout handling.
+The PowerShell script accepts a port number (and optional host, default: `127.0.0.1`). It uses .NET `System.Net.Sockets.TcpClient` to perform a fast, reliable TCP connection check with timeout handling.
 
 ### Execution in Windows PowerShell
 
-Open PowerShell in the project directory:
+Open PowerShell in the project directory and run:
+
+#### Test an open port (Recommended execution command):
+```powershell
+powershell -ExecutionPolicy Bypass -File .\powershell\check_port.ps1 80 google.com
+```
+*Expected output: `[OPEN] Port 80 on google.com is OPEN.`*
 
 #### Test a closed port:
 ```powershell
-.\powershell\check_port.ps1 9999
+powershell -ExecutionPolicy Bypass -File .\powershell\check_port.ps1 9999
 ```
-*Expected output: `[CERRADO] El puerto 9999 en 127.0.0.1 está CERRADO.`*
+*Expected output: `[CLOSED] Port 9999 on 127.0.0.1 is CLOSED.`*
 
-#### Test an open port:
+#### Direct script invocation:
 ```powershell
-.\powershell\check_port.ps1 443 google.com
-```
-*Expected output: `[ABIERTO] El puerto 443 en google.com está ABIERTO.`*
-
-#### Using named parameters:
-```powershell
+.\powershell\check_port.ps1 80 google.com
 .\powershell\check_port.ps1 -Port 80 -Hostname "google.com"
 ```
