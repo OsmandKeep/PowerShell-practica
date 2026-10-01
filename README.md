@@ -220,48 +220,59 @@ Start the test HTTP server:
 
 ## 9. Práctica: Comprobación de Puertos (Linux & PowerShell)
 
-Esta práctica incluye scripts para verificar si un puerto de red se encuentra **ABIERTO** o **CERRADO**.
+Esta práctica incluye scripts separados para verificar si un puerto de red se encuentra **ABIERTO** o **CERRADO**:
 
-### A. Versión Linux (Shell Script - `check_port.sh`)
-
-Ubicación: `scripts/check_port.sh` (y en la raíz `check_port.sh`)
-
-#### Uso dentro del contenedor o en Linux:
-```bash
-# Dar permisos de ejecución si es necesario
-chmod +x ./scripts/check_port.sh
-
-# Sintaxis:
-./scripts/check_port.sh <puerto> [host_opcional]
-
-# Ejemplos:
-./scripts/check_port.sh 8080
-./scripts/check_port.sh 80 google.com
-```
-
-#### Ejecución directa con Docker:
-```bash
-# Probar puerto 8080 (servidor web del lab)
-docker run --rm firewall-lab /lab/scripts/check_port.sh 8080
-
-# Probar puerto 80 hacia un host externo
-docker run --rm firewall-lab /lab/scripts/check_port.sh 80 google.com
+```text
+docker-firewall/
+├── shellscript/          # Scripts para Linux (Bash / Docker)
+│   ├── check_port.sh
+│   └── verificar_puerto.sh
+├── powershell/           # Scripts para Windows (PowerShell)
+│   ├── check_port.ps1
+│   └── verificar_puerto.ps1
+├── Dockerfile
+├── docker-compose.yml
+└── README.md
 ```
 
 ---
 
-### B. Versión Windows (PowerShell - `check_port.ps1`)
+### A. Versión Linux (Carpeta `shellscript/`)
 
-Ubicación: `check_port.ps1` (y en `scripts/check_port.ps1`)
+* **Ubicación:** `shellscript/check_port.sh` (dentro de Docker en `/lab/shellscript/check_port.sh`)
 
-#### Uso en PowerShell (Windows):
-```powershell
-# Sintaxis:
-.\check_port.ps1 <puerto> [host_opcional]
+#### Ejecución con Docker:
+```bash
+# Probar puerto abierto hacia un servidor externo (ej. 80 google.com)
+docker run --rm firewall-lab /lab/shellscript/check_port.sh 80 google.com
 
-# Ejemplos:
-.\check_port.ps1 8080
-.\check_port.ps1 80 google.com
-.\check_port.ps1 -Port 443 -Hostname "github.com"
+# Probar puerto cerrado (ej. 9999)
+docker run --rm firewall-lab /lab/shellscript/check_port.sh 9999
 ```
+
+#### Ejecución interactiva dentro del contenedor:
+```bash
+docker run -it --rm firewall-lab bash
+./shellscript/check_port.sh 80 google.com
+exit
+```
+
+---
+
+### B. Versión Windows (Carpeta `powershell/`)
+
+* **Ubicación:** `powershell/check_port.ps1`
+
+#### Ejecución en Windows (PowerShell):
+```powershell
+# Probar puerto cerrado (ej. 9999)
+.\powershell\check_port.ps1 9999
+
+# Probar puerto abierto hacia un servidor externo (ej. 443 google.com)
+.\powershell\check_port.ps1 443 google.com
+
+# Usando sintaxis con parámetros nombrados
+.\powershell\check_port.ps1 -Port 80 -Hostname "google.com"
+```
+
 

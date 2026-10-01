@@ -17,7 +17,8 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /lab
 
 COPY scripts/ /lab/scripts/
-RUN chmod +x /lab/scripts/*.sh
+COPY shellscript/ /lab/shellscript/
+RUN chmod +x /lab/scripts/*.sh /lab/shellscript/*.sh
 
 RUN echo '<h1>Firewall Lab</h1><p>iptables vs nftables</p>' > /lab/index.html
 
